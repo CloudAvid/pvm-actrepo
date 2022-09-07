@@ -1,0 +1,57 @@
+Name:          @PACKAGE_RPMNAME@
+Version:       @PACKAGE_RPMVERSION@
+Release:       @RELEASE_VERSION@%{?dist}
+Summary:       Actrepo library from CloudAvid
+
+Group:   pvm-core
+License:  Pre
+URL:      http://www.cloudavid.com/
+Source0:   @PACKAGE_RPMNAME@-@PACKAGE_RPMVERSION@.tgz
+BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
+
+#BuildRequires:
+Requires: pvm-plogger pvm-putil pvm-pparam pvm-ipc
+
+%description
+
+%package        devel
+Summary:        Headers and libraries for actrepo
+Group:          Development/Libraries
+Requires:       %{name} = %{version}-%{release}
+%description	devel
+
+%prep
+%setup -q
+
+
+%build
+%configure --prefix=@prefix@
+make %{?_smp_mflags}
+
+
+%install
+rm -rf $RPM_BUILD_ROOT
+make install DESTDIR=$RPM_BUILD_ROOT
+
+
+%clean
+rm -rf $RPM_BUILD_ROOT
+
+
+%files
+%defattr(-,root,root,-)
+@libdir@/libpactrepo.la
+@libdir@/libpactrepo.so
+@libdir@/libpactrepo.so.@MAJOR_VERSION@
+@libdir@/libpactrepo.so.@VERSION@
+
+%files devel
+%defattr(-,root,root,-)
+@libdir@/pkgconfig/@PACKAGE@.pc
+@includedir@/pvm/actrepo/plogger.hpp
+@includedir@/pvm/actrepo/actrepo.hpp
+@includedir@/pvm/actrepo/fireloop.hpp
+
+%postun -p /sbin/ldconfig
+
+%changelog
